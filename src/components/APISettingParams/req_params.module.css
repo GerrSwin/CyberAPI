@@ -1,0 +1,63 @@
+.tabClass {
+  position: relative;
+}
+
+.tabClass .expandSelect {
+  visibility: hidden;
+}
+
+.tabClass :global(.n-tabs):hover .expandSelect {
+  visibility: visible;
+}
+
+.tabClass :global(.n-tabs-tab__label) :global(.n-icon) {
+  margin-left: 5px;
+}
+
+.tabClass :global(.n-tabs-tab__label) .contentType {
+  width: 60px;
+  text-align: center;
+}
+
+.tabClass .badgeTab {
+  position: relative;
+}
+
+.tabClass .badgeTab .badge {
+  position: absolute;
+  right: -15px;
+  top: 8px;
+}
+
+.tabClass .badgeTab .badge :global(.n-badge-sup) {
+  padding: 0 3px !important;
+  border-radius: 3px !important;
+}
+
+.tabClass .hidden {
+  display: none;
+}
+
+.tabClass .format {
+  position: fixed;
+  bottom: 2px;
+}
+
+.tabClass .format :global(.n-icon) {
+  font-size: 16px;
+  font-weight: 900;
+  margin-right: 5px;
+}
+
+.tabClass .content {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.tabClass .keyValue {
+  margin: 10px;
+}

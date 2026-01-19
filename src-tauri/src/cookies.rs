@@ -1,0 +1,177 @@
+use cookie_store::CookieStore;
+use once_cell::sync::OnceCell;
+use serde::{Deserialize, Serialize};
+use std::{
+    fs::{self, File, OpenOptions},
+    io::BufReader,
+    io::BufWriter,
+    path::PathBuf,
+    sync::Mutex,
+    sync::MutexGuard,
+};
+use url::Url;
+
+use crate::error::CyberAPIError;
+use crate::schemas::resolve_db_file;
+
+static COOKIE_STORE: OnceCell<Mutex<CookieStore>> = OnceCell::new();
+
+fn resolve_cookie_file() -> PathBuf {
+    let filename = resolve_db_file().with_file_name(COOKIE_FILE);
+    if let Some(parent) = filename.parent() {
+        if !parent.as_os_str().is_empty() {
+            fs::create_dir_all(parent).unwrap();
+        }
+    }
+    filename
+}
+
+fn init_store() -> &'static Mutex<CookieStore> {
+    COOKIE_STORE.get_or_init(|| {
+        let filename = resolve_cookie_file();
+        let store = if filename.is_file() {
+            match OpenOptions::new().read(true).open(&filename) {
+                Ok(file) => match cookie_store::CookieStore::load_json(BufReader::new(file)) {
+                    Ok(store) => store,
+                    Err(err) => {
+                        eprintln!("Failed to load cookie store from {:?}: {}", filename, err);
+                        cookie_store::CookieStore::default()
+                    }
+                },
+                Err(err) => {
+                    eprintln!("Failed to open cookie store file {:?}: {}", filename, err);
+                    cookie_store::CookieStore::default()
+                }
+            }
+        } else {
+            cookie_store::CookieStore::default()
+        };
+        Mutex::new(store)
+    })
+}
+
+const COOKIE_FILE: &str = "cookies.json";
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Cookie {
+    name: String,
+    value: String,
+    path: String,
+    domain: String,
+    expires: String,
+}
+
+impl Cookie {
+    fn to_set_cookie_string(&self) -> String {
+        let mut arr = Vec::new();
+        arr.push(format!("{}={}", self.name, self.value));
+
+        if !self.path.is_empty() {
+            arr.push(format!("Path={}", self.path));
+        }
+        if !self.domain.is_empty() {
+            arr.push(format!("Domain={}", self.domain));
+        }
+        if !self.expires.is_empty() {
+            arr.push(format!("Expires={}", self.expires));
+        }
+
+        arr.join(";")
+    }
+    fn get_url(&self) -> String {
+        let mut path = self.path.clone();
+        if path.is_empty() {
+            path = "/".to_string()
+        }
+
+        format!("http://{}{}", self.domain, path)
+    }
+}
+
+pub fn get_cookie_store() -> MutexGuard<'static, CookieStore> {
+    let result = init_store();
+    result.lock().unwrap()
+}
+
+fn save_store(store: MutexGuard<CookieStore>) -> Result<(), CyberAPIError> {
+    let filename = resolve_cookie_file();
+    let mut writer = File::create(filename).map(BufWriter::new)?;
+    store.save_json(&mut writer)?;
+    Ok(())
+}
+
+pub fn delete_cookie_from_store(c: Cookie) -> Result<(), CyberAPIError> {
+    let name = c.name;
+    if name.is_empty() {
+        return Ok(());
+    }
+    let mut store = get_cookie_store();
+    let domain = c.domain.as_str();
+    let path = c.path.as_str();
+
+    store.remove(domain, path, name.as_str());
+    save_store(store)?;
+
+    Ok(())
+}
+
+pub fn clear_cookie_from_store() -> Result<(), CyberAPIError> {
+    let mut store = get_cookie_store();
+    store.clear();
+    save_store(store)?;
+    Ok(())
+}
+
+pub fn save_cookie_store(set_cookies: Vec<String>, current_url: &Url) -> Result<(), CyberAPIError> {
+    let mut store = get_cookie_store();
+    let now = chrono::Local::now().timestamp();
+    for ele in set_cookies {
+        let c = cookie::Cookie::parse(&ele)?;
+        let mut expired = false;
+        if let Some(expires) = c.expires() {
+            if let Some(expired_time) = expires.datetime() {
+                expired = expired_time.unix_timestamp() < now;
+            }
+        }
+        if expired {
+            store.remove(
+                c.domain().unwrap_or_default(),
+                c.path().unwrap_or_default(),
+                c.name(),
+            );
+        } else {
+            store.parse(ele.as_str(), current_url)?;
+        }
+    }
+
+    save_store(store)?;
+
+    Ok(())
+}
+
+pub fn list_cookie() -> Result<Vec<String>, CyberAPIError> {
+    let store = get_cookie_store();
+    let mut result: Vec<String> = Vec::new();
+
+    for ele in store.iter_any() {
+        let data = serde_json::to_string(ele)?;
+        if !data.is_empty() {
+            result.push(data);
+        }
+    }
+    Ok(result)
+}
+
+pub fn add_cookie(c: Cookie) -> Result<(), CyberAPIError> {
+    let mut store = get_cookie_store();
+
+    let url = c.get_url();
+    let request_url = Url::parse(&url)?;
+    let cookie_str = c.to_set_cookie_string();
+
+    store.parse(&cookie_str, &request_url)?;
+
+    save_store(store)?;
+
+    Ok(())
+}

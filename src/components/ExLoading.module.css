@@ -1,0 +1,9 @@
+.loadingClass {
+  text-align: center;
+  height: 30px;
+  line-height: 30px;
+}
+
+.loadingTextClass {
+  margin-left: 5px;
+}

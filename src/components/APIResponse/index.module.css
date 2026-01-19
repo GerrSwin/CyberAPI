@@ -1,0 +1,56 @@
+.responseClass {
+  margin-left: 5px;
+  margin-right: 2px;
+}
+
+.responseClass .infos {
+  height: 48px;
+  line-height: 48px;
+  padding: 0 10px;
+}
+
+.responseClass .codeEditor,
+.responseClass .previewWrapper {
+  position: absolute;
+  top: 50px;
+  left: 5px;
+  right: 2px;
+  bottom: 0;
+  overflow: auto;
+}
+
+.responseClass .previewWrapper {
+  z-index: 99;
+  background-color: rgb(255, 255, 255);
+}
+
+.responseClass .previewWrapper.isDark {
+  background-color: rgb(30, 30, 30);
+}
+
+.responseClass :global(.n-divider) {
+  margin: 0;
+}
+
+.responseClass .info {
+  cursor: pointer;
+  float: left;
+  margin-top: 15px;
+  padding: 0 2px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.responseClass .cookie {
+  margin-top: 16px;
+}
+
+.responseClass .header {
+  padding: 0 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.responseClass .responseList {
+  float: right;
+}

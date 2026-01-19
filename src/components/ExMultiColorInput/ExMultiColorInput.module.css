@@ -1,0 +1,99 @@
+.root {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: var(--n-height);
+  box-sizing: border-box;
+  border: 1px solid var(--n-border-color);
+  border-radius: var(--n-border-radius);
+  background: var(--n-color);
+  color: var(--n-text-color);
+  font-size: var(--n-font-size);
+  line-height: var(--n-line-height);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.root:focus-within {
+  border-color: var(--n-border-color-focus, var(--n-border-color-hover));
+  /* box-shadow: var(--n-box-shadow-focus); */
+  box-shadow: 0 0 0 2px var(--n-color-focus, rgba(24, 160, 88, 0.2));
+}
+
+.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.readonly {
+  opacity: 0.9;
+}
+
+.placeholder {
+  position: absolute;
+  left: var(--n-padding-left);
+  right: var(--n-padding-right);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--n-placeholder-color, #888);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.editable {
+  flex: 1 1 auto;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-left: var(--n-padding-left);
+  padding-right: var(--n-padding-right);
+  color: inherit;
+  font: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+  caret-color: var(--n-text-color);
+}
+
+.editable:not(.singleLine) {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-y: hidden;
+  min-height: calc(var(--n-height) + 12px);
+}
+
+.singleLine {
+  display: flex;
+  align-items: center;
+  height: var(--n-height);
+  white-space: nowrap;
+  word-break: normal;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.editable:empty::before {
+  content: '\00a0';
+}
+
+.clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.7;
+  color: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.clear:hover {
+  opacity: 1;
+}

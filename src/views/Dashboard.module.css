@@ -1,0 +1,19 @@
+.dashboardClass {
+  padding: 20px;
+}
+
+.collecitonDescriptionClass {
+  height: 60px;
+}
+
+.collectionContentClass {
+  cursor: pointer;
+}
+
+.sortOptionsClass {
+  width: 100%;
+}
+
+.sortOptionsClass .option {
+  margin: 0 10px;
+}

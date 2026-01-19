@@ -1,0 +1,29 @@
+.kvClass .item {
+  margin-bottom: 10px;
+}
+
+.kvClass :global(.n-input--autosize) {
+  width: 100%;
+}
+
+.kvClass .btns {
+  float: right;
+  margin-left: 5px;
+}
+
+.kvClass .btns :global(.n-button) {
+  padding: 0 8px !important;
+  margin-left: 2px;
+}
+
+.kvClass .btns i {
+  font-size: 16px;
+}
+
+.kvClass .kv {
+  margin-right: 75px;
+}
+
+.kvClass .kv.withFile {
+  margin-right: 110px;
+}

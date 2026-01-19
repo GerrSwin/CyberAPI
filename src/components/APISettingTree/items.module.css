@@ -1,0 +1,113 @@
+.itemsWrapperClass {
+  user-select: none;
+  position: absolute;
+  top: 50px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.itemsWrapperClass:global(.dragging) li:hover {
+  background-color: rgba(255, 255, 255, 0) !important;
+}
+
+.itemsWrapperClass:global(.dragging) :global(.dragItem):hover {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.itemsWrapperClass:global(.dragging) :global(.dragItem.light):hover {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.itemsWrapperClass ul {
+  margin: 0;
+  padding: 0;
+}
+
+.itemsWrapperClass li {
+  list-style: none;
+  padding: 3px 10px;
+  line-height: 34px;
+  height: 34px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.itemsWrapperClass li :global(.method) {
+  margin: 0 8px 0 5px;
+  font-size: 12px;
+}
+
+.itemsWrapperClass :global(.renameItem) {
+  text-overflow: initial;
+}
+
+.itemsWrapperClass :global(.renameItem):hover :global(.itemDropitem) {
+  display: none;
+}
+
+.itemsWrapperClass :global(.renameInput) {
+  width: 86% !important;
+}
+
+.itemsWrapperClass :global(.insertBefore) {
+  padding-top: 2px;
+  border-top: 1px dashed;
+}
+
+.itemsWrapperClass li:hover {
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.itemsWrapperClass li:hover :global(.itemDropitem) {
+  display: inline;
+}
+
+.itemsWrapperClass :global(.selected) {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.itemsWrapperClass :global(.light):hover {
+  background-color: rgba(30, 30, 30, 0.1);
+}
+
+.itemsWrapperClass :global(.light.selected) {
+  background-color: rgba(30, 30, 30, 0.1);
+  color: #000;
+}
+
+.itemsWrapperClass :global(.itemDropitem) {
+  float: right;
+  display: none;
+}
+
+.itemsWrapperClass :global(.folder) {
+  display: block;
+  float: left;
+  width: 30px;
+  height: 100%;
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.itemsWrapperClass :global(.folder.close) {
+  background-image: var(--folder-icon-close);
+}
+
+.itemsWrapperClass :global(.folder.open) {
+  background-image: var(--folder-icon-open);
+}
+
+.itemsWrapperClass :global(.n-icon) {
+  float: left;
+  font-size: 16px;
+  line-height: 29px;
+  margin: 5px 5px 0 10px;
+  font-weight: 900;
+}

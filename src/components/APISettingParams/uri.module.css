@@ -1,0 +1,27 @@
+.wrapperClass {
+  padding: 7px 4px 5px 0;
+  overflow: hidden;
+}
+
+.wrapperClass .url {
+  width: 100%;
+}
+
+.wrapperClass .url .method {
+  width: 120px;
+}
+
+.wrapperClass .url .method :global(.n-base-selection) {
+  height: 36px;
+}
+
+.wrapperClass .url .submit {
+  width: 80px;
+  height: 36px;
+}
+
+.wrapperClass :global(.n-input),
+.wrapperClass :global(.n-base-selection-label) {
+  background-color: transparent !important;
+  line-break: anywhere;
+}

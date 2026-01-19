@@ -1,0 +1,9 @@
+.wrapperClass {
+  height: 100%;
+  position: relative;
+  margin-left: 5px;
+}
+
+.wrapperClass :global(.n-divider) {
+  margin: 0;
+}

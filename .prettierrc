@@ -1,0 +1,18 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "singleAttributePerLine": false,
+  "htmlWhitespaceSensitivity": "css",
+  "vueIndentScriptAndStyle": true,
+  "printWidth": 150,
+  "tabWidth": 2,
+  "plugins": ["prettier-plugin-organize-imports"],
+  "overrides": [
+    {
+      "files": "**/*.yml",
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
+}

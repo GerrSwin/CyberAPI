@@ -1,0 +1,58 @@
+.header {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  padding: 0 30px 0 10px;
+  gap: 16px;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: var(--logo-width);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  background-image: var(--logo-icon);
+  background-repeat: no-repeat;
+  background-size: 30px;
+  background-position: left center;
+  padding-left: 40px;
+  white-space: nowrap;
+}
+
+.breadcrumbs {
+  min-width: 0;
+}
+
+.pinApis {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.pinApis :global(.n-tabs-pad) {
+  border-bottom: none !important;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.divider {
+  align-self: center;
+}
+
+.actions :global(.n-icon) {
+  padding: 5px;
+  font-size: 20px;
+  font-weight: 900;
+}

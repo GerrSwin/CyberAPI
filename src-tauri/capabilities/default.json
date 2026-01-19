@@ -1,0 +1,27 @@
+{
+  "identifier": "default",
+  "description": "Default permissions for the app",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+
+    "core:window:allow-set-title",
+    "core:window:allow-set-size",
+    "core:window:allow-set-position",
+    "core:window:allow-show",
+    "core:window:allow-maximize",
+    "core:window:allow-unminimize",
+    "core:window:allow-set-focus",
+
+    "core:event:default",
+    "core:event:allow-listen",
+
+    "core:app:default",
+    "core:app:allow-version",
+
+    "dialog:default",
+    "dialog:allow-message",
+
+    "clipboard-manager:allow-write-text"
+  ]
+}

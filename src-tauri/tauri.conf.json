@@ -1,0 +1,78 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:3000"
+  },
+
+  "bundle": {
+    "active": true,
+    "createUpdaterArtifacts": true,
+    "category": "DeveloperTool",
+    "copyright": "© 2026 CyberAPI",
+    "targets": ["app", "msi", "dmg", "appimage", "deb"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "silent": true,
+        "type": "embedBootstrapper"
+      },
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "http://timestamp.digicert.com"
+    },
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "shortDescription": "",
+    "linux": {
+      "deb": {}
+    }
+  },
+
+  "productName": "CyberAPI",
+  "mainBinaryName": "CyberAPI",
+  "identifier": "com.corsairs.cyberapi",
+
+  "plugins": {
+    "updater": {
+      "active": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEI3MTUwNkJFNEI1OEE5NDIKUldSQ3FWaEx2Z1lWdDZtdldWZlFmeWtoNVpmN0NKWHJuM2NCUXRBMnJBaDBibGF6MWh0Y1cwYWcK",
+      "endpoints": [
+        "https://github.com/GerrSwin/CyberAPI/releases/latest/download/latest.json"
+      ]
+    }
+  },
+
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "dragDropEnabled": false,
+        "fullscreen": false,
+        "height": 600,
+        "resizable": true,
+        "title": "Cyber API",
+        "width": 1200,
+        "center": true,
+        "visible": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  }
+}

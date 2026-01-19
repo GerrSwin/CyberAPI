@@ -1,0 +1,5 @@
+.variableClass :global(.n-card__content) {
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+}

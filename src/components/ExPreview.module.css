@@ -1,0 +1,11 @@
+.wrapperClass {
+  padding: 15px;
+}
+
+.wrapperClass img,
+.wrapperClass span,
+.wrapperClass iframe {
+  max-width: 100%;
+  display: block;
+  margin: auto;
+}

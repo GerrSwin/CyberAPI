@@ -1,0 +1,15 @@
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 15px 10px 0 0;
+}
+
+.actionBtn {
+  padding: 0 8px;
+}
+
+.showMoreClass {
+  cursor: pointer;
+  padding: 0 5px;
+}
