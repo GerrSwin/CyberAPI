@@ -38,6 +38,8 @@ export default {
     cipher: 'Cipher Suite',
     serverProcessing: 'Server Processing',
     contentTransfer: 'Content Transfer',
+    viewRaw: 'Raw',
+    viewHTML: 'HTML',
   },
   common: {
     app: 'CyberAPI',

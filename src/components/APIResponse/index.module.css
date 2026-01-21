@@ -54,3 +54,13 @@
 .responseClass .responseList {
   float: right;
 }
+
+.responseClass .previewToggle {
+  margin-left: 8px;
+}
+
+.responseClass .htmlPreview {
+  width: 100%;
+  height: 100%;
+  border: none;
+}

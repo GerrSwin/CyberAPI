@@ -39,6 +39,8 @@ export default {
     cipher: '密码套件',
     serverProcessing: '服务器处理',
     contentTransfer: '数据传输',
+    viewRaw: '原始',
+    viewHTML: 'HTML',
   },
   common: {
     app: 'CyberAPI',

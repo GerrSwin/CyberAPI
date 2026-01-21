@@ -5,7 +5,7 @@ import { defineComponent, onBeforeUnmount, onMounted, PropType, ref, StyleValue,
 import s from './index.module.css'
 
 import { toUint8Array } from 'js-base64'
-import { NDescriptions, NDescriptionsItem, NDivider, NIcon, NPopover, NSpace, useMessage } from 'naive-ui'
+import { NButton, NButtonGroup, NDescriptions, NDescriptionsItem, NDivider, NIcon, NPopover, NSpace, useMessage } from 'naive-ui'
 import type { VNode } from 'vue'
 import { useRoute } from 'vue-router'
 import { convertRequestToCURL, HTTPRequest } from '../../commands/http_request'
@@ -62,11 +62,46 @@ export default defineComponent({
       contentType: '',
       data: '',
     })
+    const htmlPreviewSrc = ref('')
+    const showHtmlPreview = ref(false)
+    const canPreviewHtml = ref(false)
 
     let req: HTTPRequest
 
     const reqExists = ref(false)
     const curl = ref('')
+
+    const resetPreview = () => {
+      previewMode.value = false
+      previewData.value = {
+        contentType: '',
+        data: '',
+      }
+      htmlPreviewSrc.value = ''
+      showHtmlPreview.value = false
+      canPreviewHtml.value = false
+    }
+
+    const isHTMLContent = (contentType: string) => /html/i.test(contentType)
+
+    const buildHTMLPreview = (contentType: string, content: string) => {
+      showHtmlPreview.value = false
+      canPreviewHtml.value = false
+      htmlPreviewSrc.value = ''
+      if (!isHTMLContent(contentType)) {
+        return
+      }
+      if (!content) {
+        return
+      }
+      try {
+        const base64HTML = window.btoa(unescape(encodeURIComponent(content)))
+        htmlPreviewSrc.value = `data:${contentType || 'text/html'};base64,${base64HTML}`
+        canPreviewHtml.value = true
+      } catch (err) {
+        console.error('buildHTMLPreview failed', err)
+      }
+    }
 
     const fillValues = async (resp: HTTPResponse) => {
       // On initial load, read the latest response
@@ -106,6 +141,7 @@ export default defineComponent({
         }
       })
 
+      resetPreview()
       if (isSupportPreview(contentType)) {
         previewMode.value = true
         previewData.value = {
@@ -116,6 +152,7 @@ export default defineComponent({
       } else {
         previewMode.value = false
       }
+      buildHTMLPreview(contentType, body.data)
       originalSize.value = resp.bodySize
       size.value = body.size
       latency.value = resp.latency
@@ -220,6 +257,9 @@ export default defineComponent({
       apiID,
       previewMode,
       previewData,
+      htmlPreviewSrc,
+      showHtmlPreview,
+      canPreviewHtml,
       codeEditor,
       handleToCURL,
       handleCollapseAll,
@@ -240,6 +280,9 @@ export default defineComponent({
       stats,
       previewMode,
       previewData,
+      htmlPreviewSrc,
+      showHtmlPreview,
+      canPreviewHtml,
       handleCollapseAll,
       handleExpandAll,
     } = this
@@ -394,10 +437,11 @@ export default defineComponent({
       )
     })
 
+    const shouldShowPreview = previewMode || showHtmlPreview
     const codeEditorCls = {
       hidden: false,
     }
-    if (previewMode) {
+    if (shouldShowPreview) {
       codeEditorCls.hidden = true
     }
     const previewWrapperCls = {
@@ -421,6 +465,13 @@ export default defineComponent({
         const percent = `${Math.ceil((originalSize * 100) / size)}%`
         sizeDesc.push(`${prettyBytes(originalSize)}(${percent})`)
       }
+    }
+
+    let previewContent: VNode | null = null
+    if (previewMode) {
+      previewContent = <ExPreview contentType={previewData.contentType} data={previewData.data} />
+    } else if (showHtmlPreview && htmlPreviewSrc) {
+      previewContent = <iframe class={s.htmlPreview} src={htmlPreviewSrc} />
     }
 
     return (
@@ -467,6 +518,32 @@ export default defineComponent({
               <div style={curlStyle}>{curlText}</div>
             </NPopover>
           )}
+          {canPreviewHtml && (
+            <NButtonGroup size="small" class={s.previewToggle}>
+              <NButton
+                tertiary
+                type={!showHtmlPreview ? 'primary' : 'default'}
+                onClick={() => {
+                  this.showHtmlPreview = false
+                }}
+              >
+                {i18nCollection('viewRaw')}
+              </NButton>
+              <NButton
+                tertiary
+                disabled={!canPreviewHtml}
+                type={showHtmlPreview ? 'primary' : 'default'}
+                onClick={() => {
+                  if (!this.canPreviewHtml) {
+                    return
+                  }
+                  this.showHtmlPreview = true
+                }}
+              >
+                {i18nCollection('viewHTML')}
+              </NButton>
+            </NButtonGroup>
+          )}
           {statusCodeInfo}
           {/* Placeholder */}
           <span> </span>
@@ -478,7 +555,7 @@ export default defineComponent({
         <NDivider />
         {codeEditorCls.hidden && (
           <div class={previewWrapperCls}>
-            <ExPreview contentType={previewData.contentType} data={previewData.data} />
+            {previewContent}
           </div>
         )}
         <div ref="codeEditor" class={s.codeEditor}></div>

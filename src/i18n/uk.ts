@@ -38,6 +38,8 @@ export default {
     cipher: 'Cipher Suite',
     serverProcessing: 'Обробка на сервері',
     contentTransfer: 'Передача вмісту',
+    viewRaw: 'Raw',
+    viewHTML: 'HTML',
   },
   common: {
     app: 'CyberAPI UA',
