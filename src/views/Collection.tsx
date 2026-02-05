@@ -127,6 +127,30 @@ export default defineComponent({
     }
     let sendingRequestID = ''
 
+    const createEmptyResponse = (api: string, req?: unknown) => {
+      return {
+        api,
+        req,
+        status: -1,
+        headers: new Map<string, string[]>(),
+        body: '',
+        bodySize: 0,
+        latency: 0,
+        stats: {
+          remoteAddr: '',
+          isHttps: false,
+          cipher: '',
+          dnsLookup: 0,
+          tcp: 0,
+          tls: 0,
+          send: 0,
+          serverProcessing: 0,
+          contentTransfer: 0,
+          total: 0,
+        },
+      } as HTTPResponse
+    }
+
     const isCurrentRequest = (reqID: string) => {
       return sendingRequestID === reqID
     }
@@ -136,7 +160,8 @@ export default defineComponent({
       if (id === abortRequestID) {
         sending.value = false
         sendingRequestID = ''
-        response.value = {} as HTTPResponse
+        const api = apiSettingStore.selectedID
+        response.value = createEmptyResponse(api)
         return
       }
       if (sending.value) {
@@ -147,9 +172,8 @@ export default defineComponent({
       const { req, originalReq } = apiSettingStore.getHTTPRequestFillValues(id)
 
       try {
-        response.value = {
-          status: -1,
-        } as HTTPResponse
+        // Always clear previous response immediately on send.
+        response.value = createEmptyResponse(id, req)
         sending.value = true
         const timeout = settingStore.getRequestTimeout()
         const res = await doHTTPRequest({
@@ -178,6 +202,10 @@ export default defineComponent({
     }
 
     const offListen = onSelectResponse((resp) => {
+      // Do not allow a history selection to overwrite the in-flight UI.
+      if (sending.value) {
+        return
+      }
       response.value = resp
     })
 

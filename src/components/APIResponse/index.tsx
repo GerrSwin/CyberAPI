@@ -104,6 +104,32 @@ export default defineComponent({
     }
 
     const fillValues = async (resp: HTTPResponse) => {
+      // Always clear view first to prevent showing previous response
+      // when current response is empty/loading or contains no body.
+      const clearView = (api?: string) => {
+        resetPreview()
+        statusCode.value = -1
+        size.value = -1
+        originalSize.value = -1
+        latency.value = 0
+        apiID.value = api || ''
+        headers.value = new Map<string, string[]>()
+        stats.value = {} as HTTPStats
+        reqExists.value = false
+        curl.value = ''
+        try {
+          editorIns?.setValue('')
+        } catch {
+          // ignore editor disposal races
+        }
+      }
+
+      // Loading state from parent: show nothing from previous response.
+      if (resp?.status === -1) {
+        clearView(resp.api)
+        return
+      }
+
       // On initial load, read the latest response
       let isFromCache = false
       if (!resp.status) {
@@ -146,13 +172,13 @@ export default defineComponent({
         previewMode.value = true
         previewData.value = {
           contentType,
-          data: body.data,
+          data: body.data || '',
         }
         editorIns?.setValue('')
       } else {
         previewMode.value = false
       }
-      buildHTMLPreview(contentType, body.data)
+      buildHTMLPreview(contentType, body.data || '')
       originalSize.value = resp.bodySize
       size.value = body.size
       latency.value = resp.latency
@@ -177,7 +203,7 @@ export default defineComponent({
             })
         }
       } else if (!previewMode.value) {
-        replaceContent(editorIns, body.data)
+          replaceContent(editorIns, body.data || '')
       }
     }
 

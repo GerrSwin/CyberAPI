@@ -9,12 +9,19 @@ export async function initWindowEvent() {
     return
   }
   const settingStore = useSettingStore()
-  if (await isMacOS()) {
-    appWindow.onCloseRequested((e) => {
+  let isClosing = false
+
+  const isMac = await isMacOS()
+
+  // On some platforms a final window move event may fire during shutdown (often with 0,0).
+  // Guard against persisting that bogus position.
+  appWindow.onCloseRequested((e) => {
+    isClosing = true
+    if (isMac) {
       e.preventDefault()
       hide()
-    })
-  }
+    }
+  })
 
   const debounceMs = 200
   let resizeTimer: ReturnType<typeof setTimeout> | null = null
@@ -57,8 +64,15 @@ export async function initWindowEvent() {
       clearTimeout(moveTimer)
     }
     moveTimer = setTimeout(async () => {
+      if (isClosing) {
+        return
+      }
       const [isMaximized, isFullscreen] = await Promise.all([appWindow.isMaximized(), appWindow.isFullscreen()])
       if (isMaximized || isFullscreen) {
+        return
+      }
+      const isMinimized = await appWindow.isMinimized()
+      if (isMinimized) {
         return
       }
       const factor = await appWindow.scaleFactor()
