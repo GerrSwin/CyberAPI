@@ -8,13 +8,6 @@ export async function initWindowEvent() {
     return
   }
   const settingStore = useSettingStore()
-  let isClosing = false
-
-  // On some platforms a final window move event may fire during shutdown (often with 0,0).
-  // Guard against persisting that bogus position.
-  appWindow.onCloseRequested(() => {
-    isClosing = true
-  })
 
   const debounceMs = 200
   let resizeTimer: ReturnType<typeof setTimeout> | null = null
@@ -57,9 +50,6 @@ export async function initWindowEvent() {
       clearTimeout(moveTimer)
     }
     moveTimer = setTimeout(async () => {
-      if (isClosing) {
-        return
-      }
       const [isMaximized, isFullscreen] = await Promise.all([appWindow.isMaximized(), appWindow.isFullscreen()])
       if (isMaximized || isFullscreen) {
         return
@@ -68,9 +58,30 @@ export async function initWindowEvent() {
       if (isMinimized) {
         return
       }
+
+      // During shutdown Windows may emit a final move event with a bogus (0,0) payload.
+      // Don't trust the event payload; query the actual current window position instead.
       const factor = await appWindow.scaleFactor()
-      const logical = payload.toLogical(factor)
-      await settingStore.updatePosition(Math.round(logical.x), Math.round(logical.y))
+      let logicalX = 0
+      let logicalY = 0
+      try {
+        const physical = await appWindow.outerPosition()
+        const logical = physical.toLogical(factor)
+        logicalX = Math.round(logical.x)
+        logicalY = Math.round(logical.y)
+      } catch {
+        const logical = payload.toLogical(factor)
+        logicalX = Math.round(logical.x)
+        logicalY = Math.round(logical.y)
+      }
+
+      // If we suddenly get (0,0) while we previously had a non-zero position,
+      // treat it as a shutdown artifact and keep the last known good position.
+      if (logicalX === 0 && logicalY === 0 && settingStore.position && (settingStore.position.x !== 0 || settingStore.position.y !== 0)) {
+        return
+      }
+
+      await settingStore.updatePosition(logicalX, logicalY)
     }, debounceMs)
   })
 }
