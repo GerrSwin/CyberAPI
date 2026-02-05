@@ -1,6 +1,5 @@
-import { hide } from '@tauri-apps/api/app'
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
-import { isMacOS, isWebMode } from './helpers/util'
+import { isWebMode } from './helpers/util'
 import { ResizeType, useSettingStore } from './stores/setting'
 const appWindow = getCurrentWebviewWindow()
 
@@ -11,16 +10,10 @@ export async function initWindowEvent() {
   const settingStore = useSettingStore()
   let isClosing = false
 
-  const isMac = await isMacOS()
-
   // On some platforms a final window move event may fire during shutdown (often with 0,0).
   // Guard against persisting that bogus position.
-  appWindow.onCloseRequested((e) => {
+  appWindow.onCloseRequested(() => {
     isClosing = true
-    if (isMac) {
-      e.preventDefault()
-      hide()
-    }
   })
 
   const debounceMs = 200
